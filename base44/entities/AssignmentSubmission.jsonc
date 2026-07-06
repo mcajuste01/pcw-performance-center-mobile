@@ -1,0 +1,103 @@
+{
+  "name": "AssignmentSubmission",
+  "type": "object",
+  "properties": {
+    "assignment_id": {
+      "type": "string",
+      "description": "Assignment ID"
+    },
+    "trainee_id": {
+      "type": "string",
+      "description": "Trainee who submitted"
+    },
+    "submission_text": {
+      "type": "string",
+      "description": "Text submission"
+    },
+    "submission_file_url": {
+      "type": "string",
+      "description": "File upload URL"
+    },
+    "submission_video_link": {
+      "type": "string",
+      "description": "YouTube/Drive video link"
+    },
+    "submission_notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "submission_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "submitted"
+      ],
+      "default": "not_started"
+    },
+    "grade": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Coach grade"
+    },
+    "feedback": {
+      "type": "string",
+      "description": "Coach feedback"
+    },
+    "graded_by": {
+      "type": "string",
+      "description": "Coach who graded"
+    },
+    "graded_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When graded"
+    }
+  },
+  "required": [
+    "assignment_id",
+    "trainee_id"
+  ],
+  "rls": {
+    "create": {
+      "data.trainee_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

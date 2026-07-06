@@ -1,0 +1,126 @@
+{
+  "name": "TrainingLog",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "User ID of trainee"
+    },
+    "drill_type": {
+      "type": "string",
+      "enum": [
+        "chain_wrestling",
+        "bumps",
+        "promos",
+        "strikes",
+        "character_work",
+        "conditioning",
+        "strength",
+        "match_psychology",
+        "aerial_moves",
+        "submission_holds",
+        "selling",
+        "ring_awareness"
+      ],
+      "description": "Type of drill performed"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Duration in minutes"
+    },
+    "intensity": {
+      "type": "string",
+      "enum": [
+        "light",
+        "moderate",
+        "intense",
+        "maximum"
+      ],
+      "default": "moderate"
+    },
+    "self_grade": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Self-assessment grade 1-10"
+    },
+    "coach_grade": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Coach grade 1-10"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Personal notes or observations"
+    },
+    "coach_feedback": {
+      "type": "string",
+      "description": "Feedback from coach"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "trainee_id",
+    "drill_type",
+    "date"
+  ],
+  "rls": {
+    "create": {
+      "data.trainee_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

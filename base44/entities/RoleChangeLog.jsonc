@@ -1,0 +1,58 @@
+{
+  "name": "RoleChangeLog",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User ID whose role was changed"
+    },
+    "previous_role": {
+      "type": "string",
+      "description": "Role before the change"
+    },
+    "new_role": {
+      "type": "string",
+      "description": "Role after the change"
+    },
+    "changed_by": {
+      "type": "string",
+      "description": "Admin user ID who made the change"
+    },
+    "changed_by_name": {
+      "type": "string",
+      "description": "Name of admin who made the change"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Optional reason for the change"
+    }
+  },
+  "required": [
+    "user_id",
+    "previous_role",
+    "new_role",
+    "changed_by"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

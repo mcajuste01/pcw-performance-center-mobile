@@ -1,0 +1,164 @@
+{
+  "name": "ConditioningCircuit",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Circuit name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Circuit overview and goal"
+    },
+    "coach_id": {
+      "type": "string",
+      "description": "Coach who created the circuit"
+    },
+    "trainee_id": {
+      "type": "string",
+      "description": "Assigned trainee (empty = reusable template)"
+    },
+    "trainee_name": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "foundation",
+        "ring_ready",
+        "match_conditioning",
+        "performance_athlete",
+        "showcase_ready"
+      ],
+      "default": "foundation",
+      "description": "PCW progress level this circuit targets"
+    },
+    "drills": {
+      "type": "array",
+      "description": "Ordered sequence of drills in the circuit",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "work_seconds": {
+            "type": "number"
+          },
+          "rest_seconds": {
+            "type": "number"
+          },
+          "rounds": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "circuit_rounds": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of times to repeat the full drill sequence"
+    },
+    "rest_between_rounds_seconds": {
+      "type": "number",
+      "default": 60
+    },
+    "total_seconds": {
+      "type": "number",
+      "description": "Calculated total duration in seconds"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "paused"
+      ],
+      "default": "active"
+    },
+    "completion_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started",
+      "description": "Trainee completion tracking"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "coach_id",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

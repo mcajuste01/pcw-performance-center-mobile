@@ -1,0 +1,117 @@
+{
+  "name": "AssignmentTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Assignment description / instructions"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "T1",
+        "T2",
+        "T3",
+        "Graduated",
+        "PCW Wrestler",
+        "All"
+      ],
+      "description": "Default target tier"
+    },
+    "assignment_type": {
+      "type": "string",
+      "enum": [
+        "promo",
+        "drill",
+        "conditioning",
+        "psychology",
+        "match_study",
+        "in_app_task"
+      ],
+      "description": "Assignment type"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Category tags"
+    },
+    "reference_video_link": {
+      "type": "string",
+      "description": "Default reference video link"
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this template defaults to recurring"
+    },
+    "recurrence_pattern": {
+      "type": "string",
+      "enum": [
+        "weekly",
+        "biweekly",
+        "monthly"
+      ],
+      "description": "Default recurrence pattern"
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Coach user ID who created the template"
+    }
+  },
+  "required": [
+    "name",
+    "assignment_type",
+    "tier"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": {
+          "$ne": null
+        }
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "data.created_by": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.created_by": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

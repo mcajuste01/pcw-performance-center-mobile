@@ -1,0 +1,91 @@
+{
+  "name": "Badge",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Badge name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Badge description"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Badge icon emoji or URL"
+    },
+    "criteria": {
+      "type": "object",
+      "description": "Achievement criteria as JSON",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "target": {
+          "type": "number"
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "xp_bonus": {
+      "type": "number",
+      "default": 50,
+      "description": "Bonus XP for earning badge"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "attendance",
+        "performance",
+        "skill",
+        "social",
+        "milestone"
+      ],
+      "description": "Badge category"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "common",
+        "rare",
+        "epic",
+        "legendary"
+      ],
+      "default": "common"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "icon"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": {
+          "$ne": null
+        }
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

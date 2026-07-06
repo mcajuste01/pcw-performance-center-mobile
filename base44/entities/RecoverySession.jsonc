@@ -1,0 +1,130 @@
+{
+  "name": "RecoverySession",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "Auth user ID"
+    },
+    "trainee_name": {
+      "type": "string"
+    },
+    "activity": {
+      "type": "string",
+      "description": "Recovery activity key (foam_rolling, ice_bath, etc.)"
+    },
+    "activity_name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "soft_tissue",
+        "mobility",
+        "temperature",
+        "movement",
+        "mental"
+      ],
+      "description": "Recovery category"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "intensity": {
+      "type": "string",
+      "enum": [
+        "light",
+        "moderate",
+        "intense"
+      ],
+      "default": "light"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "perceived_effect": {
+      "type": "string",
+      "enum": [
+        "poor",
+        "fair",
+        "good",
+        "excellent"
+      ],
+      "description": "How recovered the trainee felt after"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "trainee_id",
+    "activity",
+    "session_date"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

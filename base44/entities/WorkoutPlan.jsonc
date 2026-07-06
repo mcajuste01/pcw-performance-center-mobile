@@ -1,0 +1,208 @@
+{
+  "name": "WorkoutPlan",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "Trainee this workout is assigned to"
+    },
+    "coach_id": {
+      "type": "string",
+      "description": "Coach who created the plan"
+    },
+    "title": {
+      "type": "string",
+      "description": "Workout plan title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Plan overview and goals"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "foundation",
+        "ring_ready",
+        "match_conditioning",
+        "performance_athlete",
+        "showcase_ready"
+      ],
+      "default": "foundation",
+      "description": "PCW progress level this program targets"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "strength",
+        "conditioning",
+        "ring_movement",
+        "mobility"
+      ],
+      "default": "strength",
+      "description": "PCW Performance Lab category"
+    },
+    "focus_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Areas of focus (strength, cardio, flexibility, etc.)"
+    },
+    "exercises": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "sets": {
+            "type": "number"
+          },
+          "reps": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Flat list of exercises (legacy / simple plans)"
+    },
+    "weekly_schedule": {
+      "type": "array",
+      "description": "Day-by-day structured weekly program",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "description": "Day of week (Monday, Tuesday, etc.)"
+          },
+          "focus": {
+            "type": "string",
+            "description": "Session focus (e.g. Upper Body Strength)"
+          },
+          "is_rest_day": {
+            "type": "boolean",
+            "default": false
+          },
+          "exercises": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "sets": {
+                  "type": "number"
+                },
+                "reps": {
+                  "type": "string"
+                },
+                "notes": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "frequency": {
+      "type": "string",
+      "description": "How often to perform (e.g., 3x per week)"
+    },
+    "duration_weeks": {
+      "type": "number",
+      "description": "Plan duration in weeks"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "paused"
+      ],
+      "default": "active"
+    },
+    "completion_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed"
+      ],
+      "default": "not_started",
+      "description": "Trainee completion tracking"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the trainee marked this complete"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "trainee_id",
+    "coach_id",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

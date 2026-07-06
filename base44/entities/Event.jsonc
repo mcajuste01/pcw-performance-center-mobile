@@ -1,0 +1,167 @@
+{
+  "name": "Event",
+  "type": "object",
+  "properties": {
+    "event_name": {
+      "type": "string",
+      "description": "Name of PCW show/event"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of event"
+    },
+    "event_time": {
+      "type": "string",
+      "description": "Start time (HH:MM format)"
+    },
+    "event_end_time": {
+      "type": "string",
+      "description": "End time (HH:MM format)"
+    },
+    "location": {
+      "type": "string",
+      "description": "Venue location"
+    },
+    "description": {
+      "type": "string",
+      "description": "Event details"
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs of wrestlers on card"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "training",
+        "show",
+        "showcase",
+        "conditioning"
+      ],
+      "default": "training"
+    },
+    "session_levels": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "fundamentals",
+          "intermediate",
+          "advanced",
+          "conditioning",
+          "all"
+        ]
+      },
+      "description": "Which session levels are included. Auto-assigns trainees: fundamentals=T1, intermediate=T2, advanced=T3, conditioning/all=everyone"
+    },
+    "show_roles": {
+      "type": "object",
+      "description": "Map of userId -> show role (Wrestler, Referee, Manager/Valet, etc.)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "upcoming"
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false
+    },
+    "recurrence_pattern": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly"
+      ]
+    },
+    "recurrence_days": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ]
+      }
+    },
+    "recurrence_interval": {
+      "type": "number",
+      "default": 1
+    },
+    "recurrence_end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "assigned_assignments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "event_name",
+    "event_date"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": {
+          "$ne": null
+        }
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "data.participants": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

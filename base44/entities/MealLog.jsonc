@@ -1,0 +1,129 @@
+{
+  "name": "MealLog",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "Auth user ID"
+    },
+    "trainee_name": {
+      "type": "string"
+    },
+    "meal_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "meal_type": {
+      "type": "string",
+      "enum": [
+        "breakfast",
+        "lunch",
+        "dinner",
+        "snack",
+        "pre_workout",
+        "post_workout"
+      ],
+      "description": "Meal category"
+    },
+    "food_name": {
+      "type": "string",
+      "description": "What was eaten"
+    },
+    "calories": {
+      "type": "number",
+      "description": "Calories"
+    },
+    "protein_grams": {
+      "type": "number"
+    },
+    "carb_grams": {
+      "type": "number"
+    },
+    "fat_grams": {
+      "type": "number"
+    },
+    "serving_size": {
+      "type": "string",
+      "description": "Portion description"
+    },
+    "water_oz": {
+      "type": "number",
+      "default": 0,
+      "description": "Water consumed with this meal (oz)"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "trainee_id",
+    "meal_date",
+    "meal_type",
+    "food_name"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

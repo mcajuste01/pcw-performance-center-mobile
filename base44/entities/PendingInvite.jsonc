@@ -1,0 +1,71 @@
+{
+  "name": "PendingInvite",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Email address of the invited user"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "trainee",
+        "coach",
+        "admin"
+      ],
+      "description": "Role to be assigned when invite is claimed"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "T1",
+        "T2",
+        "T3"
+      ],
+      "default": "T1",
+      "description": "Tier level for the invited user"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "claimed",
+        "expired"
+      ],
+      "default": "pending",
+      "description": "Current status of the invitation"
+    },
+    "claimed_by": {
+      "type": "string",
+      "description": "Auth user ID of the user who claimed this invite"
+    }
+  },
+  "required": [
+    "email",
+    "role",
+    "tier"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

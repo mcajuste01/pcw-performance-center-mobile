@@ -1,0 +1,63 @@
+{
+  "name": "UserBadge",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who earned the badge"
+    },
+    "badge_id": {
+      "type": "string",
+      "description": "Badge that was earned"
+    },
+    "awarded_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date badge was earned"
+    },
+    "progress_data": {
+      "type": "object",
+      "description": "Progress tracking data when earned"
+    }
+  },
+  "required": [
+    "user_id",
+    "badge_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

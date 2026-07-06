@@ -1,0 +1,82 @@
+{
+  "name": "Belt",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Belt name"
+    },
+    "order": {
+      "type": "number",
+      "description": "Belt progression order"
+    },
+    "color": {
+      "type": "string",
+      "description": "Belt color hex code"
+    },
+    "min_level": {
+      "type": "number",
+      "description": "Minimum level required"
+    },
+    "requirements": {
+      "type": "object",
+      "description": "Requirements to achieve belt",
+      "properties": {
+        "min_classes": {
+          "type": "number"
+        },
+        "min_drills": {
+          "type": "number"
+        },
+        "min_drill_score": {
+          "type": "number"
+        },
+        "required_skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required_assignments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "description": {
+      "type": "string",
+      "description": "Belt description and significance"
+    }
+  },
+  "required": [
+    "name",
+    "order",
+    "min_level"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": {
+          "$ne": null
+        }
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "name": "FitnessProfile",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "Auth user ID of the trainee"
+    },
+    "trainee_name": {
+      "type": "string"
+    },
+    "experience_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner"
+    },
+    "goals": {
+      "type": "string",
+      "description": "Training goals"
+    },
+    "injuries": {
+      "type": "string",
+      "description": "Current or past injuries"
+    },
+    "restrictions": {
+      "type": "string",
+      "description": "Movement or medical restrictions"
+    },
+    "baseline_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "pending",
+        "completed",
+        "approved"
+      ],
+      "default": "none"
+    },
+    "current_level": {
+      "type": "string",
+      "enum": [
+        "foundation",
+        "ring_ready",
+        "match_conditioning",
+        "performance_athlete",
+        "showcase_ready"
+      ],
+      "default": "foundation"
+    },
+    "recommended_categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Recommended PCW training categories"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "trainee_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

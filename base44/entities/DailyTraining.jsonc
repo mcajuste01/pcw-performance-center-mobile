@@ -1,0 +1,105 @@
+{
+  "name": "DailyTraining",
+  "type": "object",
+  "properties": {
+    "training_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of training session"
+    },
+    "session_type": {
+      "type": "string",
+      "enum": [
+        "fundamentals_class",
+        "intermediate_class",
+        "advanced_class",
+        "open_mat",
+        "sparring",
+        "promo_workshop",
+        "psychology_session",
+        "conditioning"
+      ],
+      "description": "Type of training session"
+    },
+    "coach_id": {
+      "type": "string",
+      "description": "Coach who planned/taught the session"
+    },
+    "topics_covered": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of topics/skills covered"
+    },
+    "curriculum_items": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Curriculum item IDs covered"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Session notes and observations"
+    },
+    "attendance_count": {
+      "type": "number",
+      "description": "Number of trainees attended"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Session duration in minutes"
+    }
+  },
+  "required": [
+    "training_date",
+    "session_type",
+    "coach_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": {
+          "$ne": null
+        }
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

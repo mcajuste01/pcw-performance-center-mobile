@@ -1,0 +1,86 @@
+{
+  "name": "Tier",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Tier name"
+    },
+    "order": {
+      "type": "number",
+      "description": "Tier progression order"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "T1",
+        "T2",
+        "T3",
+        "Graduated",
+        "PCW Wrestler"
+      ],
+      "description": "Tier level"
+    },
+    "description": {
+      "type": "string",
+      "description": "Tier description"
+    },
+    "requirements": {
+      "type": "object",
+      "description": "Requirements to achieve tier",
+      "properties": {
+        "min_classes": {
+          "type": "number"
+        },
+        "min_months": {
+          "type": "number"
+        },
+        "required_skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evaluation_required": {
+          "type": "boolean"
+        }
+      }
+    },
+    "access": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Class types available at this tier"
+    }
+  },
+  "required": [
+    "name",
+    "order",
+    "level"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": {
+          "$ne": null
+        }
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

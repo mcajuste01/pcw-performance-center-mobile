@@ -1,0 +1,104 @@
+{
+  "name": "SkillProgress",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "Auth user ID of the trainee"
+    },
+    "trainee_name": {
+      "type": "string",
+      "description": "Trainee display name"
+    },
+    "self_completed": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Skill keys the trainee has marked as self-assessed"
+    },
+    "coach_verified": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Skill keys a coach has verified/approved"
+    },
+    "verified_by": {
+      "type": "string",
+      "description": "Coach user ID who last verified skills"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of last update"
+    }
+  },
+  "required": [
+    "trainee_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "name": "ProgressReport",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "Trainee user ID"
+    },
+    "report_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Report generation date"
+    },
+    "period_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Reporting period start"
+    },
+    "period_end": {
+      "type": "string",
+      "format": "date",
+      "description": "Reporting period end"
+    },
+    "report_type": {
+      "type": "string",
+      "enum": [
+        "ai_generated",
+        "coach_evaluation"
+      ],
+      "default": "ai_generated",
+      "description": "Type of report"
+    },
+    "coach_id": {
+      "type": "string",
+      "description": "Coach who wrote the evaluation"
+    },
+    "coach_review": {
+      "type": "string",
+      "description": "Raw coach evaluation text"
+    },
+    "summary": {
+      "type": "string",
+      "description": "AI-generated or summarized evaluation"
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Identified strengths"
+    },
+    "areas_for_improvement": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Areas needing work"
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Recommendations"
+    },
+    "overall_grade": {
+      "type": "string",
+      "enum": [
+        "A+",
+        "A",
+        "A-",
+        "B+",
+        "B",
+        "B-",
+        "C+",
+        "C",
+        "C-",
+        "D",
+        "F"
+      ],
+      "description": "Overall performance grade"
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Performance metrics",
+      "properties": {
+        "total_training_hours": {
+          "type": "number"
+        },
+        "average_drill_score": {
+          "type": "number"
+        },
+        "assignments_completed": {
+          "type": "number"
+        },
+        "videos_submitted": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "required": [
+    "trainee_id",
+    "report_date"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

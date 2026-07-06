@@ -1,0 +1,96 @@
+{
+  "name": "CoachNote",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "Trainee the note is about"
+    },
+    "coach_id": {
+      "type": "string",
+      "description": "Coach who wrote the note"
+    },
+    "coach_name": {
+      "type": "string"
+    },
+    "note_text": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "general",
+        "performance",
+        "injury",
+        "progress"
+      ],
+      "default": "general"
+    },
+    "is_red_flag": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marks this note as a red flag requiring attention"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "trainee_id",
+    "coach_id",
+    "note_text"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

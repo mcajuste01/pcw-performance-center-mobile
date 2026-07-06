@@ -1,0 +1,97 @@
+{
+  "name": "SelfEvaluation",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "User ID of trainee"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Training session date"
+    },
+    "what_learned": {
+      "type": "string",
+      "description": "What did you learn today?"
+    },
+    "difficult_drill": {
+      "type": "string",
+      "description": "What drill gave you trouble?"
+    },
+    "want_to_improve": {
+      "type": "string",
+      "description": "What do you want to improve?"
+    },
+    "cardio_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "How was your cardio? (1-10)"
+    },
+    "felt_safe": {
+      "type": "boolean",
+      "description": "Did you feel safe?"
+    },
+    "felt_consistent": {
+      "type": "boolean",
+      "description": "Did you feel consistent?"
+    },
+    "additional_notes": {
+      "type": "string",
+      "description": "Additional thoughts"
+    }
+  },
+  "required": [
+    "trainee_id",
+    "session_date"
+  ],
+  "rls": {
+    "create": {
+      "data.trainee_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "name": "ChatChannel",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Channel name (e.g., announcements, beginners)"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Display name with # prefix"
+    },
+    "description": {
+      "type": "string",
+      "description": "Channel description"
+    },
+    "channel_type": {
+      "type": "string",
+      "enum": [
+        "public",
+        "private",
+        "cohort",
+        "group",
+        "dm"
+      ],
+      "default": "public"
+    },
+    "read_only": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, only admins/coaches can post"
+    },
+    "allowed_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Roles allowed to access (empty = all)"
+    },
+    "cohort_filter": {
+      "type": "string",
+      "description": "Filter by experience level for cohort channels"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Channel icon emoji"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order"
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs of channel members (for group/private channels)"
+    },
+    "admins": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs of channel administrators"
+    },
+    "pinned_messages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs of pinned messages"
+    }
+  },
+  "required": [
+    "name",
+    "display_name"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.members": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.admins": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.admins": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

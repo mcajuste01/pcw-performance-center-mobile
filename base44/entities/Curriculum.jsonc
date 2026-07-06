@@ -1,0 +1,80 @@
+{
+  "name": "Curriculum",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Lesson title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Lesson description"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "description": "Difficulty level"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "fundamentals",
+        "technical",
+        "athletic",
+        "character",
+        "performance",
+        "psychology"
+      ],
+      "description": "Lesson category"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full lesson content"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Instructional video URL"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Expected duration"
+    },
+    "order_index": {
+      "type": "number",
+      "description": "Order in curriculum"
+    }
+  },
+  "required": [
+    "title",
+    "level",
+    "category"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": {
+          "$ne": null
+        }
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

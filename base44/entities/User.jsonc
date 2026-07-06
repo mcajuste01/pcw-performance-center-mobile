@@ -1,0 +1,119 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "wrestling_name": {
+      "type": "string",
+      "description": "Ring name / character name"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Biography or character description"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "T1",
+        "T2",
+        "T3"
+      ],
+      "default": "T1",
+      "description": "Current tier level"
+    },
+    "level": {
+      "type": "number",
+      "default": 1,
+      "description": "Experience level"
+    },
+    "xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Total experience points"
+    },
+    "streak_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Current attendance streak"
+    },
+    "training_start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date started training"
+    },
+    "pronouns": {
+      "type": "string",
+      "description": "Preferred pronouns"
+    },
+    "emergency_contact": {
+      "type": "string",
+      "description": "Emergency contact information"
+    },
+    "medical_notes": {
+      "type": "string",
+      "description": "Medical conditions or notes"
+    },
+    "training_goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Personal training goals"
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Wrestling specialties or coaching certifications"
+    },
+    "weight": {
+      "type": "string",
+      "description": "Weight"
+    },
+    "height": {
+      "type": "string",
+      "description": "Height"
+    },
+    "years_training": {
+      "type": "string",
+      "description": "Years of training experience"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User roles (coach, admin, etc.)"
+    },
+    "fitbit_connected": {
+      "type": "boolean",
+      "default": false
+    },
+    "fitbit_access_token": {
+      "type": "string"
+    },
+    "fitbit_refresh_token": {
+      "type": "string"
+    },
+    "fitbit_user_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "wrestling_name",
+    "bio",
+    "training_start_date",
+    "pronouns",
+    "emergency_contact",
+    "medical_notes",
+    "training_goals",
+    "specialties",
+    "weight",
+    "height",
+    "years_training",
+    "roles",
+    "fitbit_access_token",
+    "fitbit_refresh_token",
+    "fitbit_user_id"
+  ]
+}

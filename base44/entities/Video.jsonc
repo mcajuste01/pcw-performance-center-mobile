@@ -1,0 +1,125 @@
+{
+  "name": "Video",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "User ID of trainee"
+    },
+    "title": {
+      "type": "string",
+      "description": "Video title"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Uploaded video URL"
+    },
+    "video_type": {
+      "type": "string",
+      "enum": [
+        "match",
+        "promo",
+        "drill",
+        "performance"
+      ],
+      "description": "Type of video content"
+    },
+    "ai_feedback": {
+      "type": "string",
+      "description": "AI-generated feedback"
+    },
+    "coach_feedback": {
+      "type": "string",
+      "description": "Coach feedback"
+    },
+    "overall_score": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Overall score 1-10"
+    },
+    "analyzed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether AI analysis is complete"
+    },
+    "analysis_data": {
+      "type": "object",
+      "description": "Detailed analysis breakdown",
+      "properties": {
+        "timing": {
+          "type": "number"
+        },
+        "movement": {
+          "type": "number"
+        },
+        "ring_presence": {
+          "type": "number"
+        },
+        "character": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "required": [
+    "trainee_id",
+    "title",
+    "video_type"
+  ],
+  "rls": {
+    "create": {
+      "data.trainee_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

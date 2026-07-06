@@ -1,0 +1,137 @@
+{
+  "name": "EventFeedback",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "ID of the event"
+    },
+    "event_name": {
+      "type": "string",
+      "description": "Name of the event"
+    },
+    "trainee_id": {
+      "type": "string",
+      "description": "Auth user ID of trainee"
+    },
+    "trainee_name": {
+      "type": "string",
+      "description": "Optional name"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "T1",
+        "T2",
+        "T3"
+      ],
+      "description": "Trainee tier at time of feedback"
+    },
+    "training_duration": {
+      "type": "string",
+      "enum": [
+        "Less than 1 month",
+        "1\u20133 months",
+        "3\u20136 months",
+        "6+ months"
+      ],
+      "description": "How long training with PCW"
+    },
+    "session_rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Overall session rating 1-5"
+    },
+    "highlight": {
+      "type": "string",
+      "description": "What was the highlight of the session/showcase?"
+    },
+    "what_learned": {
+      "type": "string",
+      "description": "What did you learn or work on?"
+    },
+    "felt_prepared": {
+      "type": "string",
+      "enum": [
+        "Yes",
+        "Somewhat",
+        "No"
+      ],
+      "description": "Did you feel prepared for the session/show?"
+    },
+    "improvement_areas": {
+      "type": "string",
+      "description": "What areas do you want to improve?"
+    },
+    "coach_feedback": {
+      "type": "string",
+      "description": "Feedback on coaching \u2014 private, coaches only"
+    },
+    "additional_notes": {
+      "type": "string",
+      "description": "Any other private notes for coaching staff"
+    },
+    "feedback_type": {
+      "type": "string",
+      "enum": [
+        "session",
+        "showcase"
+      ],
+      "default": "session"
+    }
+  },
+  "required": [
+    "event_id",
+    "trainee_id",
+    "session_rating"
+  ],
+  "rls": {
+    "create": {
+      "data.trainee_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

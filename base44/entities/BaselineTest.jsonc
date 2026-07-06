@@ -1,0 +1,167 @@
+{
+  "name": "BaselineTest",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "Auth user ID of the trainee"
+    },
+    "trainee_name": {
+      "type": "string"
+    },
+    "test_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "test_type": {
+      "type": "string",
+      "enum": [
+        "baseline",
+        "retest"
+      ],
+      "default": "baseline"
+    },
+    "pushups": {
+      "type": "number",
+      "description": "Push-ups in 60 seconds"
+    },
+    "squats": {
+      "type": "number",
+      "description": "Air squats in 60 seconds"
+    },
+    "plank_seconds": {
+      "type": "number",
+      "description": "Plank hold time in seconds"
+    },
+    "wall_sit_seconds": {
+      "type": "number",
+      "description": "Wall sit hold time in seconds"
+    },
+    "burpees": {
+      "type": "number",
+      "description": "Burpees in 60 seconds"
+    },
+    "grip_strength": {
+      "type": "number",
+      "description": "Grip strength (kg or lbs)"
+    },
+    "rope_runs": {
+      "type": "number",
+      "description": "Rope runs in 60 seconds"
+    },
+    "sprint_time_seconds": {
+      "type": "number",
+      "description": "Sprint time in seconds"
+    },
+    "mile_run_seconds": {
+      "type": "number",
+      "description": "One mile run time in seconds"
+    },
+    "mobility_score": {
+      "type": "number",
+      "description": "Mobility score 0-100"
+    },
+    "flexibility_score": {
+      "type": "number",
+      "description": "Flexibility score 0-100"
+    },
+    "recovery_hr": {
+      "type": "number",
+      "description": "Recovery heart rate (bpm) post-test"
+    },
+    "cardio_test": {
+      "type": "string",
+      "description": "Cardio result (mile time, beep test level, etc.)"
+    },
+    "mobility_notes": {
+      "type": "string",
+      "description": "Mobility observations"
+    },
+    "coach_notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved"
+      ],
+      "default": "pending"
+    },
+    "assigned_level": {
+      "type": "string",
+      "enum": [
+        "foundation",
+        "ring_ready",
+        "match_conditioning",
+        "performance_athlete",
+        "showcase_ready"
+      ]
+    },
+    "coach_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "trainee_id",
+    "test_date"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

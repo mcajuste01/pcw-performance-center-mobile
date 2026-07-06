@@ -1,0 +1,104 @@
+{
+  "name": "ShowcaseFeedback",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "Trainee user ID"
+    },
+    "coach_id": {
+      "type": "string",
+      "description": "Coach user ID"
+    },
+    "showcase_month": {
+      "type": "string",
+      "description": "Month of the showcase in YYYY-MM format"
+    },
+    "title": {
+      "type": "string",
+      "description": "Feedback title"
+    },
+    "strengths": {
+      "type": "string",
+      "description": "What the trainee did well"
+    },
+    "areas_to_improve": {
+      "type": "string",
+      "description": "What needs improvement"
+    },
+    "coach_notes": {
+      "type": "string",
+      "description": "Additional coach notes"
+    },
+    "score": {
+      "type": "number",
+      "description": "Optional overall score"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "trainee_visible",
+        "private"
+      ],
+      "default": "trainee_visible",
+      "description": "Whether trainee can view this feedback"
+    }
+  },
+  "required": [
+    "trainee_id",
+    "coach_id",
+    "showcase_month",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}",
+          "data.visibility": "trainee_visible"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.coach_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

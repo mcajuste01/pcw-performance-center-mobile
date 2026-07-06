@@ -1,0 +1,160 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "properties": {
+    "auth_user_id": {
+      "type": "string",
+      "description": "Stores Base44 Auth user ID"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "The user's name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Same as auth email"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "trainee",
+        "coach",
+        "admin"
+      ],
+      "description": "User role"
+    },
+    "wrestling_name": {
+      "type": "string",
+      "description": "Ring name"
+    },
+    "tier": {
+      "type": "string",
+      "description": "Tier level (T1, T2, etc.)"
+    },
+    "teaching_tiers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tiers this coach teaches (for coaches only)"
+    },
+    "coach_focus": {
+      "type": "string",
+      "description": "Coach's specialty/focus area"
+    },
+    "coach_request": {
+      "type": "boolean",
+      "default": false,
+      "description": "User has requested coach status during onboarding \u2014 pending admin approval"
+    },
+    "focus_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Trainee focus areas"
+    },
+    "pronouns": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "height": {
+      "type": "string"
+    },
+    "weight": {
+      "type": "string"
+    },
+    "years_training": {
+      "type": "number"
+    },
+    "specialties": {
+      "type": "string"
+    },
+    "emergency_contact": {
+      "type": "string"
+    },
+    "medical_notes": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "goals": {
+      "type": "string"
+    },
+    "specialist_focus": {
+      "type": "string"
+    },
+    "emergency_contact_name": {
+      "type": "string"
+    },
+    "emergency_contact_phone": {
+      "type": "string"
+    },
+    "emergency_contact_relationship": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "onboarding_completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the user has completed onboarding"
+    }
+  },
+  "required": [
+    "auth_user_id",
+    "full_name",
+    "email",
+    "role"
+  ],
+  "rls": {
+    "create": {
+      "data.auth_user_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.auth_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.auth_user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

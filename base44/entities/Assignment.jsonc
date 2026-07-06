@@ -1,0 +1,226 @@
+{
+  "name": "Assignment",
+  "type": "object",
+  "properties": {
+    "coach_id": {
+      "type": "string",
+      "description": "Assigning coach ID"
+    },
+    "trainee_id": {
+      "type": "string",
+      "description": "Assigned trainee ID (if individual), null if tier-wide"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "T1",
+        "T2",
+        "T3",
+        "Graduated",
+        "PCW Wrestler",
+        "All"
+      ],
+      "description": "Target tier for assignment"
+    },
+    "title": {
+      "type": "string",
+      "description": "Assignment title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Assignment details and instructions"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Category tags for filtering (e.g. 'Weekly Drills', 'Certification', 'Monthly Theory')"
+    },
+    "reference_video_link": {
+      "type": "string",
+      "description": "Video link for tape study assignments (YouTube/Drive)"
+    },
+    "resource_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Attached resource IDs"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Due date"
+    },
+    "assignment_type": {
+      "type": "string",
+      "enum": [
+        "promo",
+        "drill",
+        "conditioning",
+        "psychology",
+        "match_study",
+        "in_app_task"
+      ],
+      "description": "Type of assignment"
+    },
+    "action_link": {
+      "type": "object",
+      "description": "Deep link to the in-app section where this task is completed",
+      "properties": {
+        "page": {
+          "type": "string"
+        },
+        "tab": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a recurring assignment"
+    },
+    "recurrence_pattern": {
+      "type": "string",
+      "enum": [
+        "weekly",
+        "biweekly",
+        "monthly"
+      ],
+      "description": "How often the assignment recurs"
+    },
+    "recurrence_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the recurrence ends"
+    },
+    "recurrence_group_id": {
+      "type": "string",
+      "description": "Groups all instances of the same recurring assignment together"
+    },
+    "recurrence_instance": {
+      "type": "number",
+      "description": "Which occurrence this is (1, 2, 3...)"
+    },
+    "submission_text": {
+      "type": "string"
+    },
+    "submission_file_url": {
+      "type": "string"
+    },
+    "submission_video_link": {
+      "type": "string"
+    },
+    "submission_notes": {
+      "type": "string"
+    },
+    "submission_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "submitted",
+        "completed"
+      ],
+      "default": "not_started"
+    },
+    "submitted_by": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "assigned",
+        "submitted",
+        "graded"
+      ],
+      "default": "assigned"
+    },
+    "grade": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "feedback": {
+      "type": "string"
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this assignment is archived (hidden from the main feed)"
+    }
+  },
+  "required": [
+    "coach_id",
+    "title",
+    "tier"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "data.tier": "{{user.data.tier}}"
+        },
+        {
+          "data.tier": "All"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    }
+  }
+}

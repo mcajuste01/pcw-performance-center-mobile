@@ -1,0 +1,143 @@
+{
+  "name": "CheckIn",
+  "type": "object",
+  "properties": {
+    "trainee_id": {
+      "type": "string",
+      "description": "User ID of trainee"
+    },
+    "trainee_name": {
+      "type": "string",
+      "description": "Trainee name at check-in"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "T1",
+        "T2",
+        "T3",
+        "Graduated",
+        "PCW Wrestler"
+      ],
+      "description": "Trainee tier at check-in"
+    },
+    "session_type": {
+      "type": "string",
+      "enum": [
+        "fundamentals",
+        "intermediate",
+        "advanced",
+        "guest_trainer",
+        "conditioning",
+        "open_mat",
+        "show_prep"
+      ],
+      "description": "Type of training session"
+    },
+    "check_in_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of check-in"
+    },
+    "check_in_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of check-in submission"
+    },
+    "attendance_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the trainee says they attended"
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "verified"
+      ],
+      "default": "pending",
+      "description": "Whether a coach verified attendance"
+    },
+    "verified_by": {
+      "type": "string",
+      "description": "Coach or admin user ID who verified attendance"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When attendance was verified"
+    },
+    "streak_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Current attendance streak"
+    },
+    "xp_awarded": {
+      "type": "number",
+      "default": 20,
+      "description": "XP awarded for this check-in"
+    }
+  },
+  "required": [
+    "trainee_id",
+    "trainee_name",
+    "tier",
+    "session_type",
+    "check_in_date"
+  ],
+  "rls": {
+    "create": {
+      "data.trainee_id": "{{user.id}}"
+    },
+    "read": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.trainee_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

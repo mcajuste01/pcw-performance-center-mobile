@@ -1,0 +1,64 @@
+{
+  "name": "NotificationPreferences",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "direct_messages": {
+      "type": "boolean",
+      "default": true,
+      "description": "Notify for direct messages"
+    },
+    "group_messages": {
+      "type": "boolean",
+      "default": true,
+      "description": "Notify for group chat messages"
+    },
+    "mentions": {
+      "type": "boolean",
+      "default": true,
+      "description": "Notify when mentioned"
+    },
+    "message_requests": {
+      "type": "boolean",
+      "default": true,
+      "description": "Notify for new message requests"
+    },
+    "announcements": {
+      "type": "boolean",
+      "default": true,
+      "description": "Notify for announcements"
+    },
+    "pinned_messages": {
+      "type": "boolean",
+      "default": true,
+      "description": "Notify for pinned messages"
+    },
+    "muted_channels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Channel IDs that are muted"
+    }
+  },
+  "required": [
+    "user_id"
+  ],
+  "rls": {
+    "create": {
+      "data.user_id": "{{user.id}}"
+    },
+    "read": {
+      "data.user_id": "{{user.id}}"
+    },
+    "update": {
+      "data.user_id": "{{user.id}}"
+    },
+    "delete": {
+      "data.user_id": "{{user.id}}"
+    }
+  }
+}

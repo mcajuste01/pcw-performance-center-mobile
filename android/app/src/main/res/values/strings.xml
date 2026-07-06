@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">PCW Performance Center</string>
+    <string name="title_activity_main">PCW Performance Center</string>
+    <string name="package_name">com.platinumchampionshipwrestling.academy</string>
+    <string name="custom_url_scheme">com.platinumchampionshipwrestling.academy</string>
+</resources>

@@ -1,0 +1,97 @@
+{
+  "name": "Resource",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Resource title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional resource description"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Coach comment about this resource"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Uploaded resource file URL"
+    },
+    "resource_type": {
+      "type": "string",
+      "enum": [
+        "file",
+        "link",
+        "video",
+        "document"
+      ],
+      "default": "file",
+      "description": "Type of resource"
+    },
+    "link_url": {
+      "type": "string",
+      "description": "Optional external link"
+    },
+    "uploaded_by": {
+      "type": "string",
+      "description": "Coach user ID who uploaded the resource"
+    },
+    "assignment_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Assignments linked to this resource"
+    }
+  },
+  "required": [
+    "title",
+    "uploaded_by"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "$or": [
+          {
+            "role": "coach"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": {
+          "$ne": null
+        }
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "data.uploaded_by": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.uploaded_by": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

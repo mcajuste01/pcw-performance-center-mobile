@@ -1,0 +1,36 @@
+{
+  "name": "UserFavoriteExercise",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User who favorited the exercise"
+    },
+    "exercise_id": {
+      "type": "string",
+      "description": "Exercise that was favorited"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Personal notes about this exercise"
+    }
+  },
+  "required": [
+    "user_id",
+    "exercise_id"
+  ],
+  "rls": {
+    "create": {
+      "data.user_id": "{{user.id}}"
+    },
+    "read": {
+      "data.user_id": "{{user.id}}"
+    },
+    "update": {
+      "data.user_id": "{{user.id}}"
+    },
+    "delete": {
+      "data.user_id": "{{user.id}}"
+    }
+  }
+}
