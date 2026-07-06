@@ -6,7 +6,16 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   server: {
     url: 'https://academy.platinumchampionshipwrestling.com',
-    cleartext: false
+    cleartext: false,
+    allowNavigation: [
+      'accounts.google.com',
+      '*.google.com',
+      'base44.app',
+      '*.base44.app'
+    ]
+  },
+  android: {
+    overrideUserAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
   }
 };
 
