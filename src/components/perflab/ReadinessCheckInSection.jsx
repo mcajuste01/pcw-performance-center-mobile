@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { HeartPulse, Plus, AlertTriangle, Activity } from "lucide-react";
 import { calculateDailyReadiness, shouldFlag } from "./readinessScore";
 import { toArray } from "./constants";
+import HealthConnectSection from "./HealthConnectSection";
 
 export default function ReadinessCheckInSection({ traineeId, traineeName }) {
   const { toast } = useToast();
@@ -92,6 +93,8 @@ export default function ReadinessCheckInSection({ traineeId, traineeName }) {
           </Button>
         )}
       </div>
+
+      <HealthConnectSection />
 
       {hasToday && (
         <Card className="border-green-800/30" style={{ background: "rgba(16,185,129,0.05)" }}>
