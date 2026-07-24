@@ -51,23 +51,17 @@
   ],
   "rls": {
     "create": {
-      "user_condition": {
-        "$or": [
-          {
-            "role": "coach"
-          },
-          {
-            "role": "admin"
-          }
-        ]
-      }
+      "$or": [
+        { "user_condition": { "role": "coach" } },
+        { "user_condition": { "role": "admin" } }
+      ]
     },
     "read": {
-      "user_condition": {
-        "role": {
-          "$ne": null
-        }
-      }
+      "$or": [
+        { "user_condition": { "role": "trainee" } },
+        { "user_condition": { "role": "coach" } },
+        { "user_condition": { "role": "admin" } }
+      ]
     },
     "update": {
       "$or": [

@@ -78,14 +78,12 @@
         },
         {
           "user_condition": {
-            "$or": [
-              {
-                "role": "coach"
-              },
-              {
-                "role": "admin"
-              }
-            ]
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
           }
         }
       ]
@@ -97,14 +95,12 @@
         },
         {
           "user_condition": {
-            "$or": [
-              {
-                "role": "coach"
-              },
-              {
-                "role": "admin"
-              }
-            ]
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
           }
         }
       ]

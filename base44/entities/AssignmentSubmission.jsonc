@@ -70,29 +70,21 @@
         },
         {
           "user_condition": {
-            "$or": [
-              {
-                "role": "coach"
-              },
-              {
-                "role": "admin"
-              }
-            ]
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
           }
         }
       ]
     },
     "update": {
-      "user_condition": {
-        "$or": [
-          {
-            "role": "coach"
-          },
-          {
-            "role": "admin"
-          }
-        ]
-      }
+      "$or": [
+        { "user_condition": { "role": "coach" } },
+        { "user_condition": { "role": "admin" } }
+      ]
     },
     "delete": {
       "user_condition": {

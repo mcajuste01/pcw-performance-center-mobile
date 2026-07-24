@@ -65,16 +65,10 @@
   ],
   "rls": {
     "create": {
-      "user_condition": {
-        "$or": [
-          {
-            "role": "coach"
-          },
-          {
-            "role": "admin"
-          }
-        ]
-      }
+      "$or": [
+        { "user_condition": { "role": "coach" } },
+        { "user_condition": { "role": "admin" } }
+      ]
     },
     "read": {
       "data.user_id": "{{user.id}}"
