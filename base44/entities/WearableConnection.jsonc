@@ -1,0 +1,20 @@
+{
+  "name": "WearableConnection",
+  "type": "object",
+  "properties": {
+    "trainee_id": { "type": "string", "description": "Base44 auth user ID" },
+    "open_wearables_user_id": { "type": "string", "description": "Open Wearables UUID; never shown to coaches" },
+    "provider": { "type": "string" },
+    "status": { "type": "string", "enum": ["pending", "connected", "revoked", "error"], "default": "pending" },
+    "coach_sharing_consent": { "type": "boolean", "default": false },
+    "consented_at": { "type": "string", "format": "date-time" },
+    "last_synced_at": { "type": "string", "format": "date-time" }
+  },
+  "required": ["trainee_id", "status"],
+  "rls": {
+    "create": { "data.trainee_id": "{{user.id}}" },
+    "read": { "$or": [{ "data.trainee_id": "{{user.id}}" }, { "user_condition": { "role": "admin" } }] },
+    "update": { "$or": [{ "data.trainee_id": "{{user.id}}" }, { "user_condition": { "role": "admin" } }] },
+    "delete": { "$or": [{ "data.trainee_id": "{{user.id}}" }, { "user_condition": { "role": "admin" } }] }
+  }
+}

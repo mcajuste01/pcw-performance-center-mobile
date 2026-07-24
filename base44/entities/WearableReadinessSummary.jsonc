@@ -1,0 +1,20 @@
+{
+  "name": "WearableReadinessSummary",
+  "type": "object",
+  "properties": {
+    "trainee_id": { "type": "string" },
+    "summary_date": { "type": "string", "format": "date" },
+    "readiness_score": { "type": "number", "minimum": 0, "maximum": 100 },
+    "readiness_status": { "type": "string", "enum": ["ready", "monitor", "recovery_suggested", "insufficient_data"] },
+    "coach_recommendation": { "type": "string", "description": "Non-diagnostic session-intensity recommendation" },
+    "source": { "type": "string" },
+    "synced_at": { "type": "string", "format": "date-time" }
+  },
+  "required": ["trainee_id", "summary_date", "readiness_status"],
+  "rls": {
+    "read": { "$or": [{ "data.trainee_id": "{{user.id}}" }, { "user_condition": { "role": "coach" } }, { "user_condition": { "role": "admin" } }] },
+    "create": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
