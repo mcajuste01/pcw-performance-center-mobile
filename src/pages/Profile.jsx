@@ -120,13 +120,9 @@ export default function ProfilePage() {
     enabled: !!me?.id,
     queryFn: async () => {
       if (!me?.id) return null;
-      const byAuthId = toArray(await base44.entities.UserProfile.filter({ auth_user_id: me.id }));
-      if (byAuthId[0] || !me.email) return byAuthId[0] || null;
-
-      // The Capacitor OAuth session can have a different subject ID while
-      // retaining the same verified Base44 account email as the browser.
-      const byEmail = toArray(await base44.entities.UserProfile.filter({ email: me.email }));
-      return byEmail[0] || null;
+      const res = await base44.entities.UserProfile.filter({ auth_user_id: me.id });
+      const items = toArray(res);
+      return items[0] || null;
     },
     initialData: null,
   });

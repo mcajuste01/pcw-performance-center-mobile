@@ -128,9 +128,6 @@
           "data.auth_user_id": "{{user.id}}"
         },
         {
-          "data.email": "{{user.email}}"
-        },
-        {
           "user_condition": {
             "role": "coach"
           }
@@ -146,9 +143,6 @@
       "$or": [
         {
           "data.auth_user_id": "{{user.id}}"
-        },
-        {
-          "data.email": "{{user.email}}"
         },
         {
           "user_condition": {

@@ -71,21 +71,9 @@ export default function Layout({ children, currentPageName }) {
             const existingProfiles = await base44.entities.UserProfile.filter({
               auth_user_id: currentUser.id,
             });
-            let profiles = Array.isArray(existingProfiles)
+            const profiles = Array.isArray(existingProfiles)
               ? existingProfiles
               : existingProfiles?.items || [];
-
-            // Native OAuth can return the same Base44 account with a different
-            // subject ID than an earlier browser session. Match the canonical
-            // profile by verified auth email before treating this as a new user.
-            if (profiles.length === 0 && currentUser.email) {
-              const emailProfiles = await base44.entities.UserProfile.filter({
-                email: currentUser.email,
-              });
-              profiles = Array.isArray(emailProfiles)
-                ? emailProfiles
-                : emailProfiles?.items || [];
-            }
 
             if (profiles.length === 0) {
               // New user — send to onboarding
