@@ -13,7 +13,7 @@ import { calculateDailyReadiness, shouldFlag } from "./readinessScore";
 import { toArray } from "./constants";
 import HealthConnectSection from "./HealthConnectSection";
 
-export default function ReadinessCheckInSection({ traineeId, traineeName }) {
+export default function ReadinessCheckInSection({ traineeId, traineeName, canSyncHealthConnect = true }) {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({});
@@ -94,7 +94,7 @@ export default function ReadinessCheckInSection({ traineeId, traineeName }) {
         )}
       </div>
 
-      <HealthConnectSection />
+      {canSyncHealthConnect && <HealthConnectSection />}
 
       {hasToday && (
         <Card className="border-green-800/30" style={{ background: "rgba(16,185,129,0.05)" }}>
