@@ -12,6 +12,7 @@ import { HeartPulse, Plus, AlertTriangle, Activity } from "lucide-react";
 import { calculateDailyReadiness, shouldFlag } from "./readinessScore";
 import { toArray } from "./constants";
 import HealthConnectSection from "./HealthConnectSection";
+import HealthTrendChart from "./HealthTrendChart";
 
 export default function ReadinessCheckInSection({ traineeId, traineeName }) {
   const { toast } = useToast();
@@ -186,6 +187,8 @@ export default function ReadinessCheckInSection({ traineeId, traineeName }) {
       )}
 
       <HealthConnectSection />
+
+      <HealthTrendChart traineeId={traineeId} />
 
       {checkInList.length > 0 && (
         <div>
