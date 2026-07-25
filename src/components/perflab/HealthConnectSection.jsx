@@ -18,7 +18,7 @@ const isNativePlatform = () => {
 
 const isNative = isNativePlatform();
 const CONNECTED_KEY = "pcw_healthconnect_connected";
-const SYNC_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
+const SYNC_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 
 const EMPTY_METRICS = {
   steps: "",
