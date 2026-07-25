@@ -41,7 +41,10 @@ const getAppParams = () => {
 		// a null server URL becomes a relative `null/api/...` request, which returns
 		// the SPA HTML shell and causes JSON parsing to fail in AuthContext.
 		serverUrl: getAppParamValue("server_url", {
-			defaultValue: import.meta.env.VITE_BASE44_BACKEND_URL || import.meta.env.VITE_BASE44_APP_BASE_URL || window.location.origin,
+			defaultValue:
+				import.meta.env.VITE_BASE44_BACKEND_URL ||
+				import.meta.env.VITE_BASE44_APP_BASE_URL ||
+				window.location.origin,
 		}),
 		token: getAppParamValue("access_token", { removeFromUrl: true }),
 		fromUrl: getAppParamValue("from_url", { defaultValue: window.location.href }),
