@@ -46,7 +46,7 @@ export default function HealthConnectSection() {
         calories: caloriesResult.samples,
       });
 
-      const result = await base44.functions.ingestHealthConnect({
+      const result = await base44.functions.invoke("ingestHealthConnect", {
         provider: "health_connect",
         consent: true,
         metrics,
