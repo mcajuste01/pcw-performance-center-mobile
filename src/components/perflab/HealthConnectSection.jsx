@@ -1,19 +1,49 @@
 import React, { useState } from "react";
-import { Health } from "@capgo/capacitor-health";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Activity } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Activity, Smartphone, Globe } from "lucide-react";
 import { normalizeHealthConnectDay } from "./healthConnectPayload";
+
+// Detect whether we're running inside a Capacitor native shell
+const isNativePlatform = () => {
+  try {
+    // Capacitor injects a global bridge on native; absent on pure web
+    return typeof window !== "undefined" && !!window.Capacitor?.isNativePlatform?.();
+  } catch {
+    return false;
+  }
+};
+
+const isNative = isNativePlatform();
+
+const EMPTY_METRICS = {
+  steps: "",
+  sleep_hours: "",
+  average_heart_rate: "",
+  active_calories: "",
+};
 
 export default function HealthConnectSection() {
   const [state, setState] = useState("idle");
-  const [message, setMessage] = useState("Connect Android Health Connect to share a daily readiness summary.");
+  const [message, setMessage] = useState(
+    isNative
+      ? "Connect Android Health Connect to share a daily readiness summary."
+      : "Enter today's health metrics manually to generate a readiness summary."
+  );
   const [steps, setSteps] = useState(null);
+  const [manualMetrics, setManualMetrics] = useState(EMPTY_METRICS);
 
-  const connect = async () => {
+  // ---- Native Android (Capacitor Health) flow ----
+  const connectNative = async () => {
     try {
       setState("working");
+      // Dynamic import so the @capgo/capacitor-health plugin is only loaded
+      // on native platforms — never on the web, where it would crash the page.
+      const { Health } = await import("@capgo/capacitor-health");
+
       const availability = await Health.isAvailable();
       if (!availability.available) {
         setState("error");
@@ -46,19 +76,44 @@ export default function HealthConnectSection() {
         calories: caloriesResult.samples,
       });
 
-      const result = await base44.functions.invoke("ingestHealthConnect", {
-        provider: "health_connect",
-        consent: true,
-        metrics,
-      });
-
-      setSteps(result?.recorded?.steps ?? metrics.steps);
-      setState("connected");
-      setMessage("Health Connect is connected and today's readiness summary was saved.");
+      await submitMetrics(metrics);
     } catch (error) {
       setState("error");
       setMessage(error?.message || "Health Connect connection failed.");
     }
+  };
+
+  // ---- Browser manual entry flow ----
+  const submitManual = async (e) => {
+    e.preventDefault();
+    try {
+      setState("working");
+      const metrics = {
+        steps: Number(manualMetrics.steps) || 0,
+        sleep_hours: Number(manualMetrics.sleep_hours) || 0,
+        average_heart_rate: Number(manualMetrics.average_heart_rate) || 0,
+        active_calories: Number(manualMetrics.active_calories) || 0,
+      };
+      await submitMetrics(metrics);
+      setManualMetrics(EMPTY_METRICS);
+    } catch (error) {
+      setState("error");
+      setMessage(error?.message || "Submission failed.");
+    }
+  };
+
+  // ---- Shared submit to backend function ----
+  const submitMetrics = async (metrics) => {
+    const res = await base44.functions.invoke("ingestHealthConnect", {
+      provider: "health_connect",
+      consent: true,
+      metrics,
+    });
+    // invoke() returns an axios response — the function's JSON lives on .data
+    const result = res?.data ?? res;
+    setSteps(result?.recorded?.steps ?? metrics.steps);
+    setState("connected");
+    setMessage("Health data synced and today's readiness summary was saved.");
   };
 
   return (
@@ -69,20 +124,93 @@ export default function HealthConnectSection() {
             <h4 className="font-semibold text-white flex items-center gap-2">
               <Activity className="w-4 h-4 text-emerald-400" />
               Health Connect
+              {isNative ? (
+                <span className="flex items-center gap-1 text-xs text-emerald-400">
+                  <Smartphone className="w-3 h-3" /> Native
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 text-xs text-sky-400">
+                  <Globe className="w-3 h-3" /> Web
+                </span>
+              )}
             </h4>
             <p className="text-xs text-gray-400 mt-1">
-              Reads today's steps, heart rate, sleep, and active calories on Android. Coaches receive only an
-              opt-in readiness summary.
+              {isNative
+                ? "Reads today's steps, heart rate, sleep, and active calories on Android. Coaches receive only an opt-in readiness summary."
+                : "Enter today's steps, sleep, heart rate, and active calories to generate a readiness summary for your coach."}
             </p>
           </div>
-          <Button onClick={connect} disabled={state === "working"} style={{ background: "#10b981" }}>
-            {state === "working"
-              ? "Connecting…"
-              : state === "connected"
-              ? "Sync again"
-              : "Connect Health Connect"}
-          </Button>
+          {isNative && (
+            <Button onClick={connectNative} disabled={state === "working"} style={{ background: "#10b981" }}>
+              {state === "working"
+                ? "Connecting…"
+                : state === "connected"
+                ? "Sync again"
+                : "Connect Health Connect"}
+            </Button>
+          )}
         </div>
+
+        {/* Browser manual entry form */}
+        {!isNative && (
+          <form onSubmit={submitManual} className="grid grid-cols-2 gap-3 pt-1">
+            <div className="space-y-1">
+              <Label className="text-xs text-gray-400">Steps</Label>
+              <Input
+                type="number"
+                min="0"
+                placeholder="8500"
+                value={manualMetrics.steps}
+                onChange={(e) => setManualMetrics((m) => ({ ...m, steps: e.target.value }))}
+                required
+                style={{ background: "#1a1a1a", borderColor: "#2a2a2a", color: "#fff" }}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-gray-400">Sleep (hours)</Label>
+              <Input
+                type="number"
+                min="0"
+                step="0.1"
+                placeholder="7.5"
+                value={manualMetrics.sleep_hours}
+                onChange={(e) => setManualMetrics((m) => ({ ...m, sleep_hours: e.target.value }))}
+                required
+                style={{ background: "#1a1a1a", borderColor: "#2a2a2a", color: "#fff" }}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-gray-400">Avg Heart Rate (bpm)</Label>
+              <Input
+                type="number"
+                min="0"
+                placeholder="62"
+                value={manualMetrics.average_heart_rate}
+                onChange={(e) => setManualMetrics((m) => ({ ...m, average_heart_rate: e.target.value }))}
+                required
+                style={{ background: "#1a1a1a", borderColor: "#2a2a2a", color: "#fff" }}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs text-gray-400">Active Calories</Label>
+              <Input
+                type="number"
+                min="0"
+                placeholder="450"
+                value={manualMetrics.active_calories}
+                onChange={(e) => setManualMetrics((m) => ({ ...m, active_calories: e.target.value }))}
+                required
+                style={{ background: "#1a1a1a", borderColor: "#2a2a2a", color: "#fff" }}
+              />
+            </div>
+            <div className="col-span-2">
+              <Button type="submit" disabled={state === "working"} className="w-full" style={{ background: "#10b981" }}>
+                {state === "working" ? "Syncing…" : "Submit & Sync Readiness"}
+              </Button>
+            </div>
+          </form>
+        )}
+
         <p className={state === "error" ? "text-sm text-red-400" : "text-gray-300"}>{message}</p>
         {steps !== null && (
           <p className="text-sm text-emerald-400">Today's synced steps: {steps.toLocaleString()}</p>
