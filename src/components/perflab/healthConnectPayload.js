@@ -4,8 +4,9 @@ export function normalizeHealthConnectDay({ steps = [], heartRate = [], sleep = 
   const heartRateValues = heartRate.map((sample) => Number(sample?.value)).filter(Number.isFinite);
   const sleepMinutes = sleep.reduce((total, sample) => {
     const value = Number(sample?.value) || 0;
-    return total + (sample?.unit === 'minute' ? value : value * 60);
+    return total + (sample?.unit === "minute" ? value : value * 60);
   }, 0);
+
   return {
     steps: sum(steps),
     average_heart_rate: heartRateValues.length
