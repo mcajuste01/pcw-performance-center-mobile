@@ -94,8 +94,6 @@ export default function ReadinessCheckInSection({ traineeId, traineeName }) {
         )}
       </div>
 
-      <HealthConnectSection />
-
       {hasToday && (
         <Card className="border-green-800/30" style={{ background: "rgba(16,185,129,0.05)" }}>
           <CardContent className="py-3">
@@ -186,6 +184,8 @@ export default function ReadinessCheckInSection({ traineeId, traineeName }) {
           </CardContent>
         </Card>
       )}
+
+      <HealthConnectSection />
 
       {checkInList.length > 0 && (
         <div>
