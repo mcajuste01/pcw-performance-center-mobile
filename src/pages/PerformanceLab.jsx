@@ -111,7 +111,7 @@ export default function PerformanceLab() {
       case "plan":
         return <WeeklyPlanSection traineeId={traineeId} traineeName={traineeName} />;
       case "readiness":
-        return <ReadinessCheckInSection traineeId={traineeId} traineeName={traineeName} canSyncHealthConnect={!isCoachOrAdmin} />;
+        return <ReadinessCheckInSection traineeId={traineeId} traineeName={traineeName} />;
       case "metrics":
         return <WrestlingMetricsSection traineeId={traineeId} traineeName={traineeName} />;
       case "score":
