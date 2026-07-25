@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Activity, Smartphone, Globe } from "lucide-react";
+import { Activity, Smartphone, Globe, RefreshCw } from "lucide-react";
 import { normalizeHealthConnectDay } from "./healthConnectPayload";
 
 // Detect whether we're running inside a Capacitor native shell
 const isNativePlatform = () => {
   try {
-    // Capacitor injects a global bridge on native; absent on pure web
     return typeof window !== "undefined" && !!window.Capacitor?.isNativePlatform?.();
   } catch {
     return false;
@@ -18,6 +17,8 @@ const isNativePlatform = () => {
 };
 
 const isNative = isNativePlatform();
+const CONNECTED_KEY = "pcw_healthconnect_connected";
+const SYNC_INTERVAL_MS = 15 * 60 * 1000; // 15 minutes
 
 const EMPTY_METRICS = {
   steps: "",
@@ -34,31 +35,34 @@ export default function HealthConnectSection() {
       : "Enter today's health metrics manually to generate a readiness summary."
   );
   const [steps, setSteps] = useState(null);
+  const [lastSynced, setLastSynced] = useState(null);
   const [manualMetrics, setManualMetrics] = useState(EMPTY_METRICS);
 
-  // ---- Native Android (Capacitor Health) flow ----
-  const connectNative = async () => {
+  const syncingRef = useRef(false);
+  const isMounted = useRef(true);
+
+  // ---- Shared submit to backend function ----
+  const submitMetrics = useCallback(async (metrics) => {
+    const res = await base44.functions.invoke("ingestHealthConnect", {
+      provider: "health_connect",
+      consent: true,
+      metrics,
+    });
+    const result = res?.data ?? res;
+    if (!isMounted.current) return;
+    setSteps(result?.recorded?.steps ?? metrics.steps);
+    setLastSynced(new Date());
+    setState("connected");
+    setMessage("Auto-sync active — readiness summary updated.");
+    return result;
+  }, []);
+
+  // ---- Native: read from Health Connect and sync ----
+  const syncNative = useCallback(async (silent = false) => {
+    if (syncingRef.current) return;
+    syncingRef.current = true;
     try {
-      setState("working");
-      // Dynamic import so the @capgo/capacitor-health plugin is only loaded
-      // on native platforms — never on the web, where it would crash the page.
       const { Health } = await import("@capgo/capacitor-health");
-
-      const availability = await Health.isAvailable();
-      if (!availability.available) {
-        setState("error");
-        setMessage(availability.reason || "Health Connect is not available on this device.");
-        return;
-      }
-
-      const access = await Health.requestAuthorization({
-        read: ["steps", "heartRate", "sleep", "calories"],
-      });
-      if (!access.readAuthorized?.includes("steps")) {
-        setState("error");
-        setMessage("Step permission is required to connect Health Connect.");
-        return;
-      }
 
       const endDate = new Date().toISOString();
       const startDate = new Date(new Date().setHours(0, 0, 0, 0)).toISOString();
@@ -78,10 +82,73 @@ export default function HealthConnectSection() {
 
       await submitMetrics(metrics);
     } catch (error) {
+      if (!isMounted.current) return;
+      if (!silent) {
+        setState("error");
+        setMessage(error?.message || "Health Connect sync failed.");
+      }
+    } finally {
+      syncingRef.current = false;
+    }
+  }, [submitMetrics]);
+
+  // ---- Native: first-time connect (request authorization) ----
+  const connectNative = async () => {
+    try {
+      setState("working");
+      const { Health } = await import("@capgo/capacitor-health");
+
+      const availability = await Health.isAvailable();
+      if (!availability.available) {
+        setState("error");
+        setMessage(availability.reason || "Health Connect is not available on this device.");
+        return;
+      }
+
+      const access = await Health.requestAuthorization({
+        read: ["steps", "heartRate", "sleep", "calories"],
+      });
+      if (!access.readAuthorized?.includes("steps")) {
+        setState("error");
+        setMessage("Step permission is required to connect Health Connect.");
+        return;
+      }
+
+      // Mark as connected so auto-sync runs on future launches
+      localStorage.setItem(CONNECTED_KEY, "true");
+      await syncNative();
+    } catch (error) {
       setState("error");
       setMessage(error?.message || "Health Connect connection failed.");
     }
   };
+
+  // ---- Auto-sync on mount + periodic interval (native only) ----
+  useEffect(() => {
+    isMounted.current = true;
+    if (!isNative) return;
+
+    const alreadyConnected = localStorage.getItem(CONNECTED_KEY) === "true";
+    if (!alreadyConnected) return;
+
+    // Initial sync on mount
+    syncNative(true);
+
+    // Periodic re-sync while app is in the foreground
+    const intervalId = setInterval(() => syncNative(true), SYNC_INTERVAL_MS);
+
+    // Also re-sync when the tab/app regains focus
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") syncNative(true);
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      isMounted.current = false;
+      clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [syncNative]);
 
   // ---- Browser manual entry flow ----
   const submitManual = async (e) => {
@@ -102,19 +169,12 @@ export default function HealthConnectSection() {
     }
   };
 
-  // ---- Shared submit to backend function ----
-  const submitMetrics = async (metrics) => {
-    const res = await base44.functions.invoke("ingestHealthConnect", {
-      provider: "health_connect",
-      consent: true,
-      metrics,
-    });
-    // invoke() returns an axios response — the function's JSON lives on .data
-    const result = res?.data ?? res;
-    setSteps(result?.recorded?.steps ?? metrics.steps);
-    setState("connected");
-    setMessage("Health data synced and today's readiness summary was saved.");
+  const formatSyncTime = (date) => {
+    if (!date) return null;
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
+
+  const isAutoSyncing = isNative && localStorage.getItem(CONNECTED_KEY) === "true" && state === "connected";
 
   return (
     <Card className="border-gray-800" style={{ background: "#0f0f0f" }}>
@@ -133,10 +193,18 @@ export default function HealthConnectSection() {
                   <Globe className="w-3 h-3" /> Web
                 </span>
               )}
+              {isAutoSyncing && (
+                <span className="flex items-center gap-1 text-xs text-emerald-400">
+                  <RefreshCw className="w-3 h-3 animate-spin" style={{ animationDuration: "2s" }} />
+                  Auto-sync
+                </span>
+              )}
             </h4>
             <p className="text-xs text-gray-400 mt-1">
               {isNative
-                ? "Reads today's steps, heart rate, sleep, and active calories on Android. Coaches receive only an opt-in readiness summary."
+                ? isAutoSyncing
+                  ? "Continuously syncing steps, heart rate, sleep, and calories every 15 minutes while the app is open. Coaches receive only an opt-in readiness summary."
+                  : "Connect once to enable automatic daily syncing of steps, heart rate, sleep, and calories. Coaches receive only an opt-in readiness summary."
                 : "Enter today's steps, sleep, heart rate, and active calories to generate a readiness summary for your coach."}
             </p>
           </div>
@@ -144,8 +212,8 @@ export default function HealthConnectSection() {
             <Button onClick={connectNative} disabled={state === "working"} style={{ background: "#10b981" }}>
               {state === "working"
                 ? "Connecting…"
-                : state === "connected"
-                ? "Sync again"
+                : isAutoSyncing
+                ? "Reconnect"
                 : "Connect Health Connect"}
             </Button>
           )}
@@ -211,10 +279,15 @@ export default function HealthConnectSection() {
           </form>
         )}
 
-        <p className={state === "error" ? "text-sm text-red-400" : "text-gray-300"}>{message}</p>
-        {steps !== null && (
-          <p className="text-sm text-emerald-400">Today's synced steps: {steps.toLocaleString()}</p>
-        )}
+        <div className="space-y-1">
+          <p className={state === "error" ? "text-sm text-red-400" : "text-gray-300"}>{message}</p>
+          {steps !== null && (
+            <p className="text-sm text-emerald-400">Today's synced steps: {steps.toLocaleString()}</p>
+          )}
+          {lastSynced && (
+            <p className="text-xs text-gray-500">Last synced: {formatSyncTime(lastSynced)}</p>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
