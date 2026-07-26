@@ -52,6 +52,8 @@ import AchievementBadges from "@/components/badges/AchievementBadges";
 import AttendanceHeatmap from "@/components/calendar/AttendanceHeatmap";
 import PerformanceMetrics from "@/components/charts/PerformanceMetrics";
 import { toast } from "sonner";
+import AccountabilityPartnersCard from "@/components/accountability/AccountabilityPartnersCard";
+import HealthConnectStatus from "@/components/profile/HealthConnectStatus";
 
 const toArray = (v) => {
   if (Array.isArray(v)) return v;
@@ -444,6 +446,10 @@ export default function ProfilePage() {
           <AthleteVitalsCard userId={me?.id} userName={info.full_name} />
         )}
 
+        {!isAdmin && (
+          <HealthConnectStatus userId={me?.id} />
+        )}
+
         {/* Basic Info */}
         <Card className="border-gray-800 bg-[#050505]">
           <CardHeader>
@@ -691,6 +697,11 @@ export default function ProfilePage() {
         )}
 
         {!isAdmin && <AchievementBadges stats={badgeStats} />}
+
+        {/* Accountability Partners */}
+        {!isAdmin && (
+          <AccountabilityPartnersCard user={me} />
+        )}
 
         {/* Delete Account */}
         <div className="rounded-xl border border-red-900/40 p-5" style={{ background: "rgba(220,38,38,0.05)" }}>

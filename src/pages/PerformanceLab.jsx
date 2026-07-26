@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Dumbbell, User, ClipboardCheck, Calendar, HeartPulse,
   Gauge, Award, Bot, FlaskConical, CalendarDays, Flame,
-  Apple, Activity, BarChart3, Trophy,
+  Apple, Activity, BarChart3, Trophy, Users,
 } from "lucide-react";
 import FitnessProfileSection from "@/components/perflab/FitnessProfileSection";
 import BaselineTestSection from "@/components/perflab/BaselineTestSection";
@@ -14,6 +14,7 @@ import WrestlingMetricsSection from "@/components/perflab/WrestlingMetricsSectio
 import PromotionScoreSection from "@/components/perflab/PromotionScoreSection";
 import ProgressLevelsSection from "@/components/perflab/ProgressLevelsSection";
 import AICoachSection from "@/components/perflab/AICoachSection";
+import AccountabilityDashboardSection from "@/components/perflab/AccountabilityDashboardSection";
 import { toArray } from "@/components/perflab/constants";
 import StrengthConditioning from "@/pages/StrengthConditioning";
 import WeeklyProgramming from "@/pages/WeeklyProgramming";
@@ -39,6 +40,7 @@ const TABS = [
   { key: "analytics", label: "Analytics", icon: BarChart3 },
   { key: "score", label: "Readiness Score", icon: Award },
   { key: "gamification", label: "Achievements", icon: Trophy },
+  { key: "accountability", label: "Accountability", icon: Users },
   { key: "coach", label: "AI Coach", icon: Bot },
 ];
 
@@ -132,6 +134,8 @@ export default function PerformanceLab() {
         return <PerformanceAnalytics />;
       case "gamification":
         return <GamificationCenter />;
+      case "accountability":
+        return <AccountabilityDashboardSection user={user} />;
       default:
         return null;
     }

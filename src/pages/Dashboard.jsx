@@ -5,7 +5,7 @@ import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { useRole } from "@/hooks/useRole";
 import {
   Trophy, Video, ClipboardList, TrendingUp, Calendar, Zap,
-  Flame, Target, ArrowRight, Activity, Settings2
+  Flame, Target, ArrowRight, Activity, Settings2, Users
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -15,6 +15,7 @@ import WeeklyCalendar from "@/components/calendar/WeeklyCalendar";
 import CoachPanel from "@/components/coach/CoachPanel";
 import WidgetGrid from "@/components/dashboard/WidgetGrid";
 import WidgetCustomizer from "@/components/dashboard/WidgetCustomizer";
+import AccountabilityPartnersCard from "@/components/accountability/AccountabilityPartnersCard";
 
 const toArray = (v) => Array.isArray(v) ? v : (v?.items || []);
 
@@ -24,7 +25,7 @@ const STORAGE_KEY = (userId, role) => `pcw_widgets_${role}_${userId}`;
 const DEFAULT_WIDGETS = {
   admin:   ["stats", "coachPanel", "weeklyCalendar", "quickActions", "events", "performanceChart", "recentSessions"],
   coach:   ["stats", "coachPanel", "weeklyCalendar", "quickActions", "events", "performanceChart", "recentSessions"],
-  trainee: ["stats", "weeklyCalendar", "quickActions", "events", "performanceChart", "recentSessions"],
+  trainee: ["stats", "weeklyCalendar", "quickActions", "events", "performanceChart", "recentSessions", "accountability"],
 };
 
 // ─── Sub-widgets (render functions injected via context) ─────────────────────
@@ -331,6 +332,13 @@ export default function Dashboard() {
             </div>
           </div>
         ),
+      },
+      {
+        id: "accountability",
+        label: "Accountability Partners",
+        description: "Your training partners, streaks, and goals",
+        icon: Users,
+        render: () => <AccountabilityPartnersCard user={user} />,
       },
     ];
 
