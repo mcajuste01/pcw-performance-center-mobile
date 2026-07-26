@@ -283,7 +283,7 @@ export default function Events() {
     const levels = Array.isArray(session_levels) ? session_levels : session_levels ? [session_levels] : [];
     const tiers = [...new Set(levels.flatMap((l) => LEVEL_TIERS[l] || []))];
     if (!tiers.length) return [];
-    return userProfiles.filter((p) => p.role !== "coach" && p.role !== "admin" && tiers.includes(p.tier))
+    return userProfiles.filter((p) => p.role !== "coach" && p.role !== "admin" && p.role !== "brand_coach" && tiers.includes(p.tier))
       .map((p) => p.auth_user_id || p.id).filter(Boolean);
   };
 
