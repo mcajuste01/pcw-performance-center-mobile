@@ -28,18 +28,44 @@ const EMPTY_METRICS = {
 };
 
 export default function HealthConnectSection() {
-  const [state, setState] = useState("idle");
+  const alreadyConnected = isNative && localStorage.getItem(CONNECTED_KEY) === "true";
+  const [state, setState] = useState(alreadyConnected ? "connected" : "idle");
   const [message, setMessage] = useState(
     isNative
-      ? "Connect Android Health Connect to share a daily readiness summary."
+      ? alreadyConnected
+        ? "Auto-sync active — readiness summary updated."
+        : "Connect Android Health Connect to share a daily readiness summary."
       : "Enter today's health metrics manually to generate a readiness summary."
   );
   const [steps, setSteps] = useState(null);
   const [lastSynced, setLastSynced] = useState(null);
   const [manualMetrics, setManualMetrics] = useState(EMPTY_METRICS);
+  const [syncHistory, setSyncHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const syncingRef = useRef(false);
   const isMounted = useRef(true);
+
+  // ---- Fetch daily sync history (WearableReadinessSummary records) ----
+  const fetchHistory = useCallback(async () => {
+    try {
+      setHistoryLoading(true);
+      const me = await base44.auth.me();
+      if (!me?.id) return;
+      const res = await base44.entities.WearableReadinessSummary.filter(
+        { trainee_id: me.id },
+        "-summary_date",
+        14
+      );
+      if (!isMounted.current) return;
+      const list = Array.isArray(res) ? res : res?.items || [];
+      setSyncHistory(list);
+    } catch {
+      // Non-fatal — history is informational
+    } finally {
+      if (isMounted.current) setHistoryLoading(false);
+    }
+  }, []);
 
   // ---- Shared submit to backend function ----
   const submitMetrics = useCallback(async (metrics) => {
@@ -54,8 +80,9 @@ export default function HealthConnectSection() {
     setLastSynced(new Date());
     setState("connected");
     setMessage("Auto-sync active — readiness summary updated.");
+    fetchHistory();
     return result;
-  }, []);
+  }, [fetchHistory]);
 
   // ---- Native: read from Health Connect and sync ----
   const syncNative = useCallback(async (silent = false) => {
@@ -126,6 +153,7 @@ export default function HealthConnectSection() {
   // ---- Auto-sync on mount + periodic interval (native only) ----
   useEffect(() => {
     isMounted.current = true;
+    fetchHistory();
     if (!isNative) return;
 
     const alreadyConnected = localStorage.getItem(CONNECTED_KEY) === "true";
@@ -203,7 +231,7 @@ export default function HealthConnectSection() {
             <p className="text-xs text-gray-400 mt-1">
               {isNative
                 ? isAutoSyncing
-                  ? "Continuously syncing steps, heart rate, sleep, and calories every 15 minutes while the app is open. Coaches receive only an opt-in readiness summary."
+                  ? "Continuously syncing steps, heart rate, sleep, and calories every 10 minutes while the app is open. Coaches receive only an opt-in readiness summary."
                   : "Connect once to enable automatic daily syncing of steps, heart rate, sleep, and calories. Coaches receive only an opt-in readiness summary."
                 : "Enter today's steps, sleep, heart rate, and active calories to generate a readiness summary for your coach."}
             </p>
@@ -213,7 +241,7 @@ export default function HealthConnectSection() {
               {state === "working"
                 ? "Connecting…"
                 : isAutoSyncing
-                ? "Reconnect"
+                ? "Sync Now"
                 : "Connect Health Connect"}
             </Button>
           )}
@@ -286,6 +314,43 @@ export default function HealthConnectSection() {
           )}
           {lastSynced && (
             <p className="text-xs text-gray-500">Last synced: {formatSyncTime(lastSynced)}</p>
+          )}
+        </div>
+
+        {/* Daily Sync History */}
+        <div className="pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+          <p className="text-xs font-semibold text-gray-300 uppercase tracking-wide mb-2">Sync History</p>
+          {historyLoading && syncHistory.length === 0 ? (
+            <p className="text-xs text-gray-600">Loading records…</p>
+          ) : syncHistory.length === 0 ? (
+            <p className="text-xs text-gray-600">No sync records yet. Sync to see your daily readiness history.</p>
+          ) : (
+            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              {syncHistory.map((rec) => {
+                const score = rec.readiness_score;
+                const scoreColor = score >= 75 ? "#10b981" : score >= 55 ? "#f59e0b" : "#dc2626";
+                return (
+                  <div key={rec.id} className="flex items-center gap-3 p-2 rounded-lg" style={{ background: "rgba(255,255,255,0.02)" }}>
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: `${scoreColor}15` }}>
+                      <span className="text-sm font-bold" style={{ color: scoreColor }}>
+                        {score ?? "—"}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-white">{rec.summary_date}</p>
+                      <p className="text-[10px] text-gray-500 truncate">
+                        {rec.steps != null && `${rec.steps.toLocaleString()} steps`}
+                        {rec.sleep_hours != null && ` • ${rec.sleep_hours}h sleep`}
+                        {rec.average_heart_rate != null && ` • ${rec.average_heart_rate} bpm`}
+                      </p>
+                    </div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded font-medium flex-shrink-0" style={{ background: `${scoreColor}20`, color: scoreColor }}>
+                      {rec.readiness_status?.replace("_", " ") || "—"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </CardContent>
