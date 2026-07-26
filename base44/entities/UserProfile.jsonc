@@ -19,9 +19,23 @@
       "enum": [
         "trainee",
         "coach",
+        "brand_coach",
         "admin"
       ],
       "description": "User role"
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "trainee",
+          "coach",
+          "brand_coach",
+          "admin"
+        ]
+      },
+      "description": "All roles assigned to this user (primary role is roles[0])"
     },
     "wrestling_name": {
       "type": "string",
@@ -45,7 +59,7 @@
     "coach_request": {
       "type": "boolean",
       "default": false,
-      "description": "User has requested coach status during onboarding \u2014 pending admin approval"
+      "description": "User has requested coach status during onboarding — pending admin approval"
     },
     "focus_areas": {
       "type": "array",
@@ -66,7 +80,7 @@
     "date_of_birth": {
       "type": "string",
       "format": "date",
-      "description": "Date of birth \u2014 used to determine minor status for guardian consent"
+      "description": "Date of birth — used to determine minor status for guardian consent"
     },
     "height": {
       "type": "string"
@@ -135,6 +149,11 @@
         {
           "user_condition": {
             "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "brand_coach"
           }
         },
         {
