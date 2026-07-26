@@ -77,6 +77,10 @@ Deno.serve(async (req) => {
     readiness_status: readinessStatus,
     coach_recommendation: recommendation,
     source: "health_connect",
+    sleep_hours: sleepHours,
+    average_heart_rate: heartRate,
+    steps,
+    active_calories: activeCalories,
     synced_at: new Date().toISOString(),
   };
   if (summary) {

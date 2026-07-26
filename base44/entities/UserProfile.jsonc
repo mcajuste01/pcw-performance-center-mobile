@@ -63,6 +63,11 @@
     "avatar_url": {
       "type": "string"
     },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of birth \u2014 used to determine minor status for guardian consent"
+    },
     "height": {
       "type": "string"
     },
