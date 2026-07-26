@@ -1,0 +1,123 @@
+{
+  "name": "AccountabilityMembership",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string",
+      "description": "Reference to AccountabilityGroup"
+    },
+    "group_name": {
+      "type": "string",
+      "description": "Denormalized group name for display"
+    },
+    "athlete_id": {
+      "type": "string",
+      "description": "Auth user ID of the athlete member"
+    },
+    "athlete_name": {
+      "type": "string",
+      "description": "Display name of the athlete"
+    },
+    "invited_by": {
+      "type": "string",
+      "description": "Auth user ID of who sent the invite"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "invited",
+        "active",
+        "declined",
+        "left"
+      ],
+      "default": "invited"
+    },
+    "joined_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "guardian_consent_given": {
+      "type": "boolean",
+      "default": false,
+      "description": "Required true for minors before status can become active"
+    }
+  },
+  "required": [
+    "group_id",
+    "athlete_id"
+  ],
+  "rls": {
+    "create": {
+      "$or": [
+        {
+          "data.athlete_id": "{{user.id}}"
+        },
+        {
+          "data.invited_by": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "read": {
+      "$or": [
+        {
+          "data.athlete_id": "{{user.id}}"
+        },
+        {
+          "data.invited_by": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.athlete_id": "{{user.id}}"
+        },
+        {
+          "data.invited_by": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "coach"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.athlete_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

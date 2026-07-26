@@ -55,12 +55,14 @@
         },
         {
           "user_condition": {
-            "role": "coach"
-          }
-        },
-        {
-          "user_condition": {
-            "role": "admin"
+            "$or": [
+              {
+                "role": "coach"
+              },
+              {
+                "role": "admin"
+              }
+            ]
           }
         }
       ]
