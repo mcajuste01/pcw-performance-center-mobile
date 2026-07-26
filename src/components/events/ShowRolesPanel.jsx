@@ -22,7 +22,7 @@ export default function ShowRolesPanel({ event }) {
     queryKey: ["userProfilesForEvent"],
     queryFn: async () => {
       const res = await base44.entities.UserProfile.list();
-      return toArray(res).filter(p => p.role !== "coach" && p.role !== "admin");
+      return toArray(res).filter(p => p.role !== "coach" && p.role !== "admin" && p.role !== "brand_coach");
     },
     enabled: open,
     initialData: [],
