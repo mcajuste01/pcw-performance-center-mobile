@@ -317,6 +317,37 @@ export default function HealthConnectSection() {
           )}
         </div>
 
+        {/* Auto-Sync Log — last 10 syncs */}
+        <div className="pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+          <p className="text-xs font-semibold text-gray-300 uppercase tracking-wide mb-2">Auto-Sync Log</p>
+          {historyLoading && syncHistory.length === 0 ? (
+            <p className="text-xs text-gray-600">Loading…</p>
+          ) : syncHistory.length === 0 ? (
+            <p className="text-xs text-gray-600">No sync events recorded yet.</p>
+          ) : (
+            <div className="space-y-1 max-h-40 overflow-y-auto">
+              {syncHistory.slice(0, 10).map((rec) => {
+                const ts = rec.synced_at || rec.created_date;
+                const timeStr = ts
+                  ? new Date(ts).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+                  : rec.summary_date || "—";
+                const status = rec.readiness_status?.replace(/_/g, " ") || "synced";
+                const isReady = rec.readiness_status === "ready";
+                const isMonitor = rec.readiness_status === "monitor";
+                const isRecovery = rec.readiness_status === "recovery_suggested";
+                const dotColor = isReady ? "#10b981" : isMonitor ? "#f59e0b" : isRecovery ? "#dc2626" : "#6b7280";
+                return (
+                  <div key={rec.id} className="flex items-center gap-2 text-xs py-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: dotColor }} />
+                    <span className="text-gray-300 flex-1 truncate">{timeStr}</span>
+                    <span className="text-gray-500 capitalize flex-shrink-0">{status}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Daily Sync History */}
         <div className="pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
           <p className="text-xs font-semibold text-gray-300 uppercase tracking-wide mb-2">Sync History</p>
