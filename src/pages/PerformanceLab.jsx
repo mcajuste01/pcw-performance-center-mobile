@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   Dumbbell, User, ClipboardCheck, Calendar, HeartPulse,
   Gauge, Award, Bot, FlaskConical, CalendarDays, Flame,
-  Apple, Activity, BarChart3, Trophy, Users,
+  Apple, Activity, BarChart3, Trophy, Users, Megaphone,
 } from "lucide-react";
 import FitnessProfileSection from "@/components/perflab/FitnessProfileSection";
 import BaselineTestSection from "@/components/perflab/BaselineTestSection";
@@ -23,8 +23,9 @@ import RecoveryCenter from "@/pages/RecoveryCenter";
 import NutritionCenter from "@/pages/NutritionCenter";
 import PerformanceAnalytics from "@/pages/PerformanceAnalytics";
 import GamificationCenter from "@/pages/GamificationCenter";
+import BrandPromoSection from "@/components/brand/BrandPromoSection";
 
-const PERFLAB_TABS = ["profile", "baseline", "plan", "readiness", "metrics", "score", "coach"];
+const PERFLAB_TABS = ["profile", "baseline", "plan", "readiness", "metrics", "score", "coach", "brand"];
 
 const TABS = [
   { key: "profile", label: "Profile", icon: User },
@@ -42,6 +43,7 @@ const TABS = [
   { key: "gamification", label: "Achievements", icon: Trophy },
   { key: "accountability", label: "Accountability", icon: Users },
   { key: "coach", label: "AI Coach", icon: Bot },
+  { key: "brand", label: "Brand & Promo", icon: Megaphone },
 ];
 
 export default function PerformanceLab() {
@@ -57,8 +59,10 @@ export default function PerformanceLab() {
         // Admins/coaches are staff — they pick a trainee from the roster, not themselves
         const isStaff =
           currentUser?.role === "admin" ||
+          currentUser?.role === "brand_coach" ||
           currentUser?.roles?.includes("coach") ||
-          currentUser?.roles?.includes("admin");
+          currentUser?.roles?.includes("admin") ||
+          currentUser?.roles?.includes("brand_coach");
         if (!isStaff) {
           setSelectedTraineeId(currentUser.id);
         }
@@ -120,6 +124,8 @@ export default function PerformanceLab() {
         return <PromotionScoreSection traineeId={traineeId} />;
       case "coach":
         return <AICoachSection traineeId={traineeId} />;
+      case "brand":
+        return <BrandPromoSection traineeId={traineeId} traineeName={traineeName} />;
       case "sc":
         return <StrengthConditioning />;
       case "weekly":
