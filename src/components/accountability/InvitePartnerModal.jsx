@@ -44,8 +44,8 @@ export default function InvitePartnerModal({ user, onClose, onInvited }) {
       const exists = prev.find((p) => p.id === trainee.auth_user_id);
       if (exists) return prev.filter((p) => p.id !== trainee.auth_user_id);
       if (groupType === "pair" && prev.length >= 1) {
-        toast.info("Pairs are limited to 2 athletes. Switch to Pod for more.");
-        return [prev[0], { id: trainee.auth_user_id, name: trainee.wrestling_name || trainee.full_name }].slice(0, 1);
+        toast.info("Pairs are limited to 2 athletes. Replacing current selection.");
+        return [{ id: trainee.auth_user_id, name: trainee.wrestling_name || trainee.full_name }];
       }
       return [...prev, { id: trainee.auth_user_id, name: trainee.wrestling_name || trainee.full_name }];
     });
