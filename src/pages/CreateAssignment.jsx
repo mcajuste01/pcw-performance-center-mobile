@@ -138,6 +138,10 @@ export default function CreateAssignment() {
       toast.success("Assignment updated!");
       navigate(createPageUrl("Assignments"));
     },
+    onError: (error) => {
+      console.error("Update failed:", error);
+      toast.error(error?.message || "Failed to update assignment");
+    },
   });
 
   const createAssignmentMutation = useMutation({
@@ -205,10 +209,18 @@ export default function CreateAssignment() {
       toast.success(count > 1 ? `${count} recurring assignments created!` : "Assignment created successfully!");
       navigate(createPageUrl("Assignments"));
     },
+    onError: (error) => {
+      console.error("Create failed:", error);
+      toast.error(error?.message || "Failed to create assignment");
+    },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!user?.id) {
+      toast.error("Your profile is still loading. Please wait a moment and try again.");
+      return;
+    }
     if (!formData.title || !formData.tier) {
       toast.error("Please fill in all required fields");
       return;
