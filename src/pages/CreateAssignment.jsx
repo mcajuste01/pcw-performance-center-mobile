@@ -529,7 +529,8 @@ export default function CreateAssignment() {
                   Cancel
                 </Button>
                 <Button
-                  type="submit"
+                  type="button"
+                  onClick={() => handleSubmit({ preventDefault: () => {} })}
                   disabled={createAssignmentMutation.isPending || updateAssignmentMutation.isPending}
                   style={{ background: '#8b3dff' }}
                 >
