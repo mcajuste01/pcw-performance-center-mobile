@@ -286,7 +286,6 @@ export default function CreateAssignment() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="bg-gray-900 border-gray-700 text-white h-32"
                   placeholder="Detailed instructions for the task..."
-                  required
                 />
               </div>
 
